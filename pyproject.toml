@@ -12,3 +12,15 @@ dependencies = [
 
 [tool.uv.sources]
 psql = { path = "../psql", editable = true }
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]  # 基本错误检查
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.11",
+]
