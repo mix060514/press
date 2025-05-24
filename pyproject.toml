@@ -5,5 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "playwright>=1.52.0",
+    "psql",
     "scrapy>=2.13.0",
 ]
+
+[tool.uv.sources]
+psql = { path = "../psql", editable = true }
