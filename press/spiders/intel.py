@@ -68,6 +68,9 @@ class IntelSpider(BaseSpider):
             date = date.replace("Updated ", "")
             date = datetime.strptime(date, "%B %d, %Y")
 
+            if self.is_url_crawled(link):
+                continue
+
             yield scrapy.Request(
                 url=link,
                 callback=self.parse_article,
