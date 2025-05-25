@@ -481,7 +481,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "playwright", specifier = ">=1.52.0" },
-    { name = "psql", editable = "../psql" },
+    { name = "psql", editable = "../../../../home/mix060514/pj/psql" },
     { name = "scrapy", specifier = ">=2.13.0" },
 ]
 
@@ -500,7 +500,7 @@ wheels = [
 [[package]]
 name = "psql"
 version = "0.1.0"
-source = { editable = "../psql" }
+source = { editable = "../../../../home/mix060514/pj/psql" }
 dependencies = [
     { name = "dotenv" },
     { name = "pandas" },
