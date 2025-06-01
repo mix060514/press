@@ -31,4 +31,4 @@ if [ -d "psql" ]; then
     rm -rf "$SCRIPT_DIR/psql"
 fi
 
-echo "建置完成！" 
+echo "建置完成！"
