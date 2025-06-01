@@ -3,7 +3,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-from psql.PG import PG
+from psql.pg import PG
 import pandas as pd
 from datetime import datetime
 
@@ -27,7 +27,8 @@ class PressPipeline:
 
         # Create table if it doesn't exist
         self.pg.query("""
-            CREATE TABLE IF NOT EXISTS press_release (
+            CREATE SCHEMA IF NOT EXISTS press;
+            CREATE TABLE IF NOT EXISTS press.press_release (
                 id SERIAL PRIMARY KEY,
                 spider TEXT,
                 url TEXT UNIQUE,
@@ -41,7 +42,7 @@ class PressPipeline:
 
         # 加載已爬取的URL並設置在爬蟲中
         result = self.pg.query(
-            f"SELECT url FROM press_release WHERE spider = '{spider.name}'"
+            f"SELECT url FROM press.press_release WHERE spider = '{spider.name}'"
         )
         if result is not None and not result.empty:
             spider.crawled_urls = set(result["url"].tolist())
@@ -68,7 +69,7 @@ class PressPipeline:
 
             # 使用臨時表來處理資料插入，避免重複鍵值錯誤
             temp_table_name = (
-                f"temp_press_release_{spider.name}_{int(datetime.now().timestamp())}"
+                f"press.temp_press_release_{spider.name}_{int(datetime.now().timestamp())}"
             )
 
             try:
@@ -77,10 +78,10 @@ class PressPipeline:
 
                 # 2. 在單一事務中刪除重複資料並插入新資料
                 upsert_sql = f"""
-                DELETE FROM press_release 
+                DELETE FROM press.press_release 
                 WHERE url IN (SELECT url FROM {temp_table_name});
                 
-                INSERT INTO press_release (spider, url, title, date, content, crawled_at)
+                INSERT INTO press.press_release (spider, url, title, date, content, crawled_at)
                 SELECT spider, url, title, date, content, crawled_at 
                 FROM {temp_table_name}
                 """
