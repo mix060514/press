@@ -3,232 +3,290 @@ import json
 from datetime import datetime
 from press.items import PressItem
 from .base_spider import BaseSpider
+from scrapy.shell import inspect_response
 
+params = {
+    'organizationId': 'xilinxcomprode2rjoqok',
+}
+
+json_data = {
+    'locale': 'en',
+    'debug': False,
+    'tab': 'default',
+    'referrer': 'https://www.amd.com/en/newsroom.html',
+    'timezone': 'Asia/Taipei',
+    'cq': '(@amd_result_type=="Press Releases")',
+    'context': {
+        'amd_lang': 'en',
+    },
+    'fieldsToInclude': [
+        'author',
+        'language',
+        'urihash',
+        'objecttype',
+        'collection',
+        'source',
+        'permanentid',
+        'date',
+        'filetype',
+        'parents',
+        'ec_price',
+        'ec_name',
+        'ec_description',
+        'ec_brand',
+        'ec_category',
+        'ec_item_group_id',
+        'ec_shortdesc',
+        'ec_thumbnails',
+        'ec_images',
+        'ec_promo_price',
+        'ec_in_stock',
+        'ec_rating',
+        'amd_result_type',
+        'amd_release_date',
+        'amd_lang',
+        'amd_result_image',
+        'limessageissolution',
+        'lithreadhassolution',
+        'description',
+        'amd_partner',
+        'amd_cta_link',
+        'amd_hub_pull_command',
+        'amd_child_design_file',
+        'amd_child_associated_file',
+        'amd_video_date',
+        'amd_video_duration',
+        'amd_video_views',
+        'ytlikecount',
+        'amd_document_id',
+        'amd_document_type',
+        'amd_document_location',
+        'amd_claim_text',
+        'amd_cert_driver_app_name',
+        'amd_cert_driver_app_version',
+        'amd_cert_driver_brand_name',
+        'amd_cert_driver_isv',
+        'amd_cert_driver_name',
+        'amd_cert_driver_os',
+        'amd_cert_driver_url',
+        'amd_cert_driver_video_card',
+        'amd_support_article_type',
+        'amd_app_type',
+        'amd_category',
+        'amd_product_category',
+        'amd_supported_workloads',
+        'amd_target_platforms',
+        'amd_product_vendor',
+        'amd_vendor_type',
+        'amd_is_external_link',
+        'amd_hub_container',
+        'amd_region',
+        'workphone',
+        'amd_product_brand',
+        'amd_product_type',
+        'amd_w2buy_partner_type',
+        'amd_industries',
+        'amd_application_specialty',
+        'amd_product_price',
+        'amd_partner_tier',
+        'amd_product_sub_category',
+        'amd_open_source_project_interest',
+        'amd_cta_link_2',
+    ],
+    'q': '',
+    'enableQuerySyntax': False,
+    'searchHub': 'press-releases-sh',
+    'sortCriteria': '@amd_release_date descending',
+    'queryCorrection': {
+        'enabled': False,
+        'options': {
+            'automaticallyCorrect': 'whenNoResults',
+        },
+    },
+    'enableDidYouMean': True,
+    'facets': [
+        {
+            'filterFacetCount': True,
+            'injectionDepth': 1000,
+            'numberOfValues': 8,
+            'sortCriteria': 'alphanumeric',
+            'resultsMustMatch': 'atLeastOneValue',
+            'type': 'specific',
+            'currentValues': [],
+            'freezeCurrentValues': False,
+            'isFieldExpanded': False,
+            'preventAutoSelect': False,
+            'facetId': 'amd_press_category',
+            'field': 'amd_press_category',
+        },
+        {
+            'filterFacetCount': True,
+            'injectionDepth': 1000,
+            'numberOfValues': 5,
+            'sortCriteria': 'descending',
+            'rangeAlgorithm': 'even',
+            'resultsMustMatch': 'atLeastOneValue',
+            'currentValues': [
+                {
+                    'start': '2025/06/01@00:07:17',
+                    'end': '2025/06/02@00:07:17',
+                    'endInclusive': False,
+                    'state': 'idle',
+                },
+                {
+                    'start': '2025/05/26@00:07:17',
+                    'end': '2025/06/02@00:07:17',
+                    'endInclusive': False,
+                    'state': 'idle',
+                },
+                {
+                    'start': '2025/05/02@00:07:17',
+                    'end': '2025/06/02@00:07:17',
+                    'endInclusive': False,
+                    'state': 'idle',
+                },
+                {
+                    'start': '2025/03/02@00:07:17',
+                    'end': '2025/06/02@00:07:17',
+                    'endInclusive': False,
+                    'state': 'idle',
+                },
+                {
+                    'start': '2024/06/02@00:07:17',
+                    'end': '2025/06/02@00:07:17',
+                    'endInclusive': False,
+                    'state': 'idle',
+                },
+            ],
+            'preventAutoSelect': False,
+            'type': 'dateRange',
+            'facetId': 'amd_release_date',
+            'field': 'amd_release_date',
+            'generateAutomaticRanges': False,
+        },
+        {
+            'filterFacetCount': True,
+            'injectionDepth': 1000,
+            'numberOfValues': 1,
+            'sortCriteria': 'ascending',
+            'rangeAlgorithm': 'even',
+            'resultsMustMatch': 'atLeastOneValue',
+            'currentValues': [],
+            'preventAutoSelect': False,
+            'type': 'dateRange',
+            'facetId': 'amd_release_date_input_range',
+            'generateAutomaticRanges': True,
+            'field': 'amd_release_date',
+        },
+        {
+            'filterFacetCount': True,
+            'injectionDepth': 1000,
+            'numberOfValues': 0,
+            'sortCriteria': 'ascending',
+            'rangeAlgorithm': 'even',
+            'resultsMustMatch': 'atLeastOneValue',
+            'currentValues': [],
+            'preventAutoSelect': False,
+            'type': 'dateRange',
+            'facetId': 'amd_release_date_input',
+            'field': 'amd_release_date',
+            'generateAutomaticRanges': False,
+        },
+    ],
+    'numberOfResults': 12,
+    'firstResult': 0,
+    'facetOptions': {
+        'freezeFacetOrder': False,
+    },
+}
 
 class AmdSpider(BaseSpider):
     name = "amd"
     allowed_domains = ["www.amd.com", "xilinxcomprode2rjoqok.org.coveo.com"]
-
+    
     # API endpoint instead of HTML page
     api_url = "https://xilinxcomprode2rjoqok.org.coveo.com/rest/search/v2"
     base_url = "https://www.amd.com{}"
 
-    def __init__(self, *args, **kwargs):
-        super(AmdSpider, self).__init__(*args, **kwargs)
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+        'authorization': 'Bearer xx5ee91b6a-e227-4c6f-83f2-f2120ca3509e',
+        'content-type': 'application/json',
+        'dnt': '1',
+        'origin': 'https://www.amd.com',
+        'priority': 'u=1, i',
+        'referer': 'https://www.amd.com/',
+        'sec-ch-ua': '"Microsoft Edge";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'cross-site',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0',
+    }
+    json_data = json_data
 
-        # AMD-specific pagination parameters
-        self.results_per_page = int(
-            kwargs.get("results_per_page", 12)
-        )  # Results per API call
-        self.current_offset = 0  # Current offset for pagination
 
-        # Set up AMD-specific headers
-        amd_headers = self.get_default_headers()
-        amd_headers.update(
-            {
-                "authorization": "Bearer xx5ee91b6a-e227-4c6f-83f2-f2120ca3509e",
-                "content-type": "application/json",
-                "origin": "https://www.amd.com",
-                "priority": "u=1, i",
-                "referer": "https://www.amd.com/",
-                "sec-fetch-dest": "empty",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "cross-site",
-            }
-        )
-
-        self.custom_settings.update(
-            {
-                "DEFAULT_REQUEST_HEADERS": amd_headers,
-            }
-        )
-
-    def start_requests(self):
-        """Start with API request instead of HTML page"""
-        yield self.make_api_request(first_result=0)
-
-    def make_api_request(self, first_result=0):
-        """Create API request with proper payload"""
-        params = {
-            "organizationId": "xilinxcomprode2rjoqok",
-        }
-
-        json_data = {
-            "locale": "en",
-            "debug": False,
-            "tab": "default",
-            "referrer": "default",
-            "timezone": "Asia/Taipei",
-            "cq": '(@amd_result_type=="Press Releases")',
-            "context": {
-                "amd_lang": "en",
-            },
-            "fieldsToInclude": [
-                "author",
-                "language",
-                "urihash",
-                "objecttype",
-                "collection",
-                "source",
-                "permanentid",
-                "date",
-                "filetype",
-                "parents",
-                "amd_result_type",
-                "amd_release_date",
-                "amd_lang",
-                "amd_result_image",
-                "description",
-                "amd_partner",
-                "amd_cta_link",
-                "amd_category",
-                "amd_product_category",
-                "amd_region",
-                "amd_product_brand",
-                "amd_product_type",
-                "amd_industries",
-            ],
-            "q": "",
-            "enableQuerySyntax": False,
-            "searchHub": "press-releases-sh",
-            "sortCriteria": "@amd_release_date descending",
-            "queryCorrection": {
-                "enabled": False,
-                "options": {
-                    "automaticallyCorrect": "whenNoResults",
-                },
-            },
-            "enableDidYouMean": True,
-            "facets": [
-                {
-                    "filterFacetCount": True,
-                    "injectionDepth": 1000,
-                    "numberOfValues": 8,
-                    "sortCriteria": "alphanumeric",
-                    "resultsMustMatch": "atLeastOneValue",
-                    "type": "specific",
-                    "currentValues": [],
-                    "freezeCurrentValues": False,
-                    "isFieldExpanded": False,
-                    "preventAutoSelect": False,
-                    "facetId": "amd_press_category",
-                    "field": "amd_press_category",
-                }
-            ],
-            "numberOfResults": self.results_per_page,
-            "firstResult": first_result,
-            "facetOptions": {
-                "freezeFacetOrder": False,
-            },
-        }
-
-        return scrapy.Request(
+    async def start(self):
+        number_of_results = 12
+        current_page = 1
+        json_data['firstResult'] = (current_page - 1) * number_of_results
+        current_page += 1
+        json_data['numberOfResults'] = number_of_results
+        
+        yield scrapy.Request(
             url=self.api_url,
-            method="POST",
-            headers=self.custom_settings["DEFAULT_REQUEST_HEADERS"],
+            method='POST',
+            headers=self.headers,
+            callback=self.parse_api,
             body=json.dumps(json_data),
-            callback=self.parse_api_response,
-            meta={"first_result": first_result},
-            dont_filter=True,
         )
 
-    def parse_api_response(self, response):
-        """Parse API response and extract press release data"""
-        try:
-            data = json.loads(response.text)
-        except json.JSONDecodeError as e:
-            self.logger.error(f"Failed to parse JSON response: {e}")
-            return
-
-        results = data.get("results", [])
-        total_count = data.get("totalCount", 0)
-        first_result = response.meta.get("first_result", 0)
-
-        self.logger.info(
-            f"Processing {len(results)} results from offset {first_result}"
-        )
-        self.logger.info(f"Total available results: {total_count}")
-
-        for result in results:
-            # Extract URL from the result
-            url = result.get("uri", "") or result.get("clickUri", "")
-            if not url:
-                continue
-
-            # Use base class method to check for crawled URLs
-            if self.is_url_crawled(url):
-                continue
-
-            # Extract comprehensive information from API response
-            title = result.get("title", "")
-            excerpt = result.get("excerpt", "")
-
-            # Extract from raw data section
-            raw_data = result.get("raw", {})
-            raw_date = raw_data.get("amd_release_date")
-            result_image = raw_data.get("amd_result_image", "")
-            document_location = raw_data.get("amd_document_location", "")
-            result_type = raw_data.get("amd_result_type", "")
-            language = raw_data.get("language", [])
-
-            # Also check for description in the main result object
-            description = result.get("description", "") or excerpt
-
-            # Parse date from timestamp
-            date = None
-            if raw_date:
-                try:
-                    # API returns timestamp in milliseconds
-                    if isinstance(raw_date, (int, float)):
-                        date = datetime.fromtimestamp(raw_date / 1000)
-                    elif isinstance(raw_date, str):
-                        # Try to parse as ISO format or other common formats
-                        if "T" in raw_date:
-                            date = datetime.fromisoformat(
-                                raw_date.replace("Z", "+00:00")
-                            )
-                except Exception as e:
-                    self.logger.warning(f"Could not parse date '{raw_date}': {e}")
-
-            # Log extracted information for debugging
-            self.logger.info(f"Extracted: {title[:50]}... | Date: {date} | URL: {url}")
-
-            # Make request to individual article page for full content
+        for current_page in range(1, 4):
+            json_data['firstResult'] = (current_page - 1) * number_of_results
             yield scrapy.Request(
-                url=url,
-                callback=self.parse_article,
-                meta={
-                    "api_title": title,
-                    "api_date": date,
-                    "api_description": description,
-                    "api_excerpt": excerpt,
-                    "api_result_image": result_image,
-                    "api_document_location": document_location,
-                    "api_result_type": result_type,
-                    "api_language": language,
-                    "api_raw_date": raw_date,
-                },
+                url=self.api_url,
+                method='POST',
+                headers=self.headers,
+                callback=self.parse_api,
+                body=json.dumps(json_data),
             )
 
-        # Check if we need to fetch more results
-        next_first_result = first_result + len(results)
-        if next_first_result < total_count and next_first_result < self.max_results:
-            self.logger.info(f"Fetching next batch starting from {next_first_result}")
-            yield self.make_api_request(first_result=next_first_result)
+        
+
+
+    def parse_api(self, response):
+        # inspect_response(response, self)
+        articles = response.json()['results']
+        for article in articles:
+            title = article['title'].strip()
+            url = article['clickUri']
+            # example: 1747848221000
+            date = datetime.fromtimestamp(int(article['raw']['date']) / 1000)
+            article_header = self.headers.copy()
+            article_header['referer'] = 'https://www.amd.com/en/newsroom/press-release-search.html'
+            yield scrapy.Request(
+                url=url,
+                method='GET',
+                callback=self.parse_article,
+                headers=article_header,
+                meta={
+                    'title': title,
+                    'url': url,
+                    'date': date,
+                }
+            )
 
     def parse_article(self, response):
-        # Get API data from meta as fallback
-        title = response.meta.get("api_title", "")
-        date = response.meta.get("api_date")
+        content: list[str] = response.css( "div.article-container div.text ::text").getall()
+        content = [c.strip() for c in content if c.strip()]
+        content = '\n'.join(content)
 
-        # 提取文章內容
-        content: list[str] = response.css(
-            "div.article-container div.text ::text"
-        ).getall()
-        content = "\n".join(txt.strip() for txt in content if txt.strip())
-
-        # Log using base class method
-        self.log_article_info(title, date, len(content), response.url)
-
-        # Use base class method to create item
-        yield self.create_press_item(response.url, title, date, content)
+        yield {
+            'spider': self.name,
+            'title': response.meta['title'],
+            'url': response.meta['url'],
+            'date': response.meta['date'],
+            'content': content,
+        }
