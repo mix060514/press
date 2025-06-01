@@ -1,0 +1,26 @@
+.git
+.gitignore
+
+.venv/
+
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+
+.history/
+.cursor/
+.vscode/
+
+.scrapy/
+
+bk
+
+README.md
+*.md
+
+# Airflow DAGs (這些不應該在 Docker 映像中)
+dags/ 
+
+
+logs/
+*.log

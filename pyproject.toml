@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-psql = { path = "../../../../home/mix060514/pj/psql", editable = true }
+psql = { path = "../psql", editable = true }
 
 [tool.ruff]
 line-length = 88
