@@ -1,99 +1,75 @@
 import scrapy
 from datetime import datetime
-from press.items import PressItem
-from .base_spider import BaseSpider
+from scrapy.shell import inspect_response
 
-
-class NvidiaSpider(BaseSpider):
+class NvidiaSpider(scrapy.Spider):
     name = "nvidia"
     allowed_domains = ["nvidianews.nvidia.com"]
-    start_urls = ["https://nvidianews.nvidia.com"]
-    url = "https://nvidianews.nvidia.com/news?c=21926&page={}"
-    base_url = "https://nvidianews.nvidia.com{}"
+    url_template = "https://nvidianews.nvidia.com/news?c=21926&page={}"
 
-    def __init__(self, *args, **kwargs):
-        super(NvidiaSpider, self).__init__(*args, **kwargs)
-        # NVIDIA-specific pagination
-        self.start_page = int(kwargs.get("start_page", 1))
-        self.current_page = 1
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'dnt': '1',
+        'priority': 'u=0, i',
+        'referer': 'https://nvidianews.nvidia.com/news',
+        'sec-ch-ua': '"Microsoft Edge";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0',
+    }
 
-        # Set up NVIDIA-specific headers
-        nvidia_headers = self.get_default_headers()
-        nvidia_headers.update(
-            {
-                "cache-control": "max-age=0",
-                "priority": "u=0, i",
-                "referer": "https://nvidianews.nvidia.com/",
-                "sec-fetch-dest": "document",
-                "sec-fetch-mode": "navigate",
-                "sec-fetch-site": "same-origin",
-                "sec-fetch-user": "?1",
-                "upgrade-insecure-requests": "1",
-            }
-        )
-
-        self.custom_settings.update(
-            {
-                "DEFAULT_REQUEST_HEADERS": nvidia_headers,
-            }
-        )
+    custom_settings = {
+        'DEFAULT_REQUEST_HEADERS': headers,
+    }
 
     async def start(self):
-        # 直接從第1頁開始
-        first_page_url = self.url.format(1)
+        current_page = 1
         yield scrapy.Request(
-            url=first_page_url,
-            callback=self.parse_menu,
+            url=self.url_template.format(current_page),
+            callback=self.parse_listing,
         )
-
-    def parse_menu(self, response):
-        # 檢查是否在指定的頁數範圍內
-        if self.current_page > self.max_pages:
-            self.logger.info(f"Reached maximum pages limit: {self.max_pages}")
-            return
-
-        self.logger.info(f"Processing page {self.current_page}")
-
-        # 提取當前頁面的文章連結
-        urls = response.css(
-            "div#page-content div.container article.index-item div.index-item-text a::attr(href)"
-        ).getall()
-        for url in urls:
-            full_url = self.base_url.format(url)
-
-            # Use base class method to check for crawled URLs
-            if self.is_url_crawled(full_url):
-                continue
-
+        for current_page in range(2, 3):
             yield scrapy.Request(
-                url=full_url,
-                callback=self.parse,
-            )
-        # 檢查是否還需要繼續爬取下一頁
-        if self.current_page < self.max_pages:
-            # 增加頁數計數並生成下一頁連結
-            self.current_page += 1
-            next_page_link = self.url.format(self.current_page)
-            yield scrapy.Request(
-                url=next_page_link,
-                callback=self.parse_menu,
+                url=self.url_template.format(current_page),
+                callback=self.parse_listing,
             )
 
-    def parse(self, response):
-        title = response.css("div#page-content div.container h1::text").get()
-        date = (
-            response.css("div#page-content div.container div.article-date::text")
-            .get()
-            .strip()
-        )
-        date = datetime.strptime(date, "%B %d, %Y")
-        content = response.css(
-            "div#page-content div.container div.article-body ::text"
-        ).getall()
-        content = "\n".join(txt.strip() for txt in content if txt.strip())
+    def parse_listing(self, response):
+        articles = response.css("div#page-content div.container div.index article.index-item")
+        for article in articles:
+            title = article.css("h3.index-item-text-title a::text").get().strip()
+            url = article.css("h3.index-item-text-title a::attr(href)").get()
+            # href="/news/nvidia-sets-conference-call-for-first-quarter-financial-results-6910262"
+            date = article.css("div.index-item-text div.index-item-text-info span.index-item-text-info-date::text").get()
+            # April 30, 2025
+            date = datetime.strptime(date, "%B %d, %Y")
 
-        # Log using base class method
-        self.log_article_info(title, date, len(content), response.url)
+            yield scrapy.Request(
+                url=response.urljoin(url),
+                callback=self.parse_article,
+                meta={
+                    'title': title,
+                    'url': url,
+                    'date': date,
+                }
+            )
 
-        # Use base class method to create item
-        yield self.create_press_item(response.url, title, date, content)
+    def parse_article(self, response):
+        # inspect_response(response, self)
+        content = response.css("div.conainter div.main div.article-body ::text").getall()
+        content = [c.strip() for c in content if c.strip()]
+        content = "\n".join(content)
+        yield {
+            'spider': self.name,
+            'title': response.meta['title'],
+            'url': response.meta['url'],
+            'date': response.meta['date'],
+            'content': content,
+        }
