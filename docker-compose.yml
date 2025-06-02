@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  press-crawler:
+    image: press-scrapy
+    container_name: press_crawler
+    environment:
+      - PG_HOST=${PG_HOST:-localhost}
+      - PG_PORT=${PG_PORT:-5432}
+      - PG_DBNAME=${PG_DBNAME:-press_db}
+      - PG_USER=${PG_USER:-postgres}
+      - PG_PASSWORD=${PG_PASSWORD:-aaaaaa}
+    volumes:
+      - ./logs:/app/logs
+      - ./.scrapy:/app/.scrapy
+    network_mode: "host"
+
+  amd-crawler:
+    extends: press-crawler
+    container_name: amd_crawler
+    command: ["crawl", "amd", "-a", "start_page=1", "--logfile", "/app/logs/amd_latest.log"]
+
+  # intel-crawler:
+  #   extends: press-crawler
+  #   container_name: intel_crawler
+  #   command: ["crawl", "intel", "-a", "start_page=1", "--logfile", "/app/logs/intel_latest.log"]
+
+  nvidia-crawler:
+    extends: press-crawler
+    container_name: nvidia_crawler
+    command: ["crawl", "nvidia", "-a", "start_page=1", "--logfile", "/app/logs/nvidia_latest.log"]
