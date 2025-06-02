@@ -2,7 +2,6 @@ import scrapy
 import json
 from datetime import datetime
 from press.items import PressItem
-from .base_spider import BaseSpider
 from scrapy.shell import inspect_response
 
 params = {
@@ -200,7 +199,7 @@ json_data = {
     },
 }
 
-class AmdSpider(BaseSpider):
+class AmdSpider(scrapy.Spider):
     name = "amd"
     allowed_domains = ["www.amd.com", "xilinxcomprode2rjoqok.org.coveo.com"]
     
@@ -243,7 +242,7 @@ class AmdSpider(BaseSpider):
             body=json.dumps(json_data),
         )
 
-        for current_page in range(1, 4):
+        for current_page in range(2, 3):
             json_data['firstResult'] = (current_page - 1) * number_of_results
             yield scrapy.Request(
                 url=self.api_url,
