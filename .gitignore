@@ -12,7 +12,6 @@ wheels/
 
 .history
 .scrapy
-.cursor
 .venv
 .pytest_cache
 .ruff_cache

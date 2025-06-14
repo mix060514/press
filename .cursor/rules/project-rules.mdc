@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- commit message 用 feat/fix/chore/，附上描述
+
+- Docker build/run 常用指令、volume 掛載範例：
+  - `docker build -t press-crawler .`
+  - `docker run --rm -it -v $(pwd)/logs:/app/logs press-crawler bash`
+- Scrapy 本地測試：
+  - `scrapy crawl amd -a start_page=1 --logfile logs/amd.log`
+- 依賴同步：`uv sync --locked`，不要手動 pip install
+- volume 權限問題，建議 logs/ .scrapy/ 掛載時加 777 權限
+
+- 遇到 blocking 問題要即時同步（Slack/Line/Teams）
+- 重要決策、踩雷經驗、最佳實踐請記錄於 .cursor/rules/project-rules.mdc
+
+- Scrapy pipeline 連線 DB 請用連線池，避免連線爆掉
+- Docker volume 權限不足導致日誌寫不進去，請確認 logs/ 權限
+- Airflow DAG 路徑錯誤，請用絕對路徑或確認工作目錄
+- 依賴沒同步導致 ImportError，請用 uv sync --locked
+
